@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+
+    <center>
+        <TabPane>
+            <tabs>
+
+                <Tab text="Wysyłanie Wiadomości" closable="false">
+                    <fx:include source="SendMSG-view.fxml"/>
+                </Tab>
+
+                <Tab text="Wysyłanie Pliku" closable="false">
+                    <fx:include source="SendFILE-view.fxml"/>
+                </Tab>
+
+                <Tab text="Status" closable="false">
+                    <fx:include source="Status-view.fxml"/>
+                </Tab>
+
+                <Tab text="Diagram Sieci" closable="false">
+                    <content>
+                        <StackPane style="-fx-background-color: #FAFAFA;">
+                            <ImageView>
+                                <image>
+                                    <Image url="@diagram.png"
+                                           preserveRatio="true"
+                                           requestedWidth="750" />
+                                </image>
+                            </ImageView>
+                        </StackPane>
+                    </content>
+                </Tab>
+
+            </tabs>
+        </TabPane>
+    </center>
+
+</BorderPane>
