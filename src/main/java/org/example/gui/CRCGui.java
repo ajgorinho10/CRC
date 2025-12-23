@@ -12,6 +12,7 @@ public class CRCGui extends Application {
     public void start(Stage stage) throws Exception {
 
         Siec.start();
+        Siec.makeError(-1,0);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("CRC-view.fxml"));
         Scene scene = new Scene(loader.load(),800,600);

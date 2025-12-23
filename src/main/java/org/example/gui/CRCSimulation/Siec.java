@@ -3,6 +3,7 @@ package org.example.gui.CRCSimulation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Siec {
@@ -10,6 +11,9 @@ public class Siec {
     public static final int AMOUNT_OF_PC = 10;
     public static List<Komputer> pcList = new ArrayList<Komputer>();
     public static Map<Integer, List<Integer>> topologia = new ConcurrentHashMap<>();
+
+    public static int ErrorType;
+    public static int ErrorPC;
 
     public static Boolean start(){
         try{
@@ -63,7 +67,7 @@ public class Siec {
 
             return "OK";
         }catch (Exception e){
-            return e.toString();
+            return e.getMessage();
         }
     }
 
@@ -76,6 +80,33 @@ public class Siec {
             return "OK";
         }catch (Exception e){
             return e.toString();
+        }
+    }
+
+    public static void makeError(int eType, int ePC){
+        topologia.clear();
+        stworzTopologie();
+
+        ErrorPC = ePC+1;
+        ErrorType = eType;
+        Komputer pc = pcList.get(ePC);
+
+        if(pc == null){
+            return;
+        }
+
+        if(eType == 1){
+            topologia.remove(pc.serwerPort);
+            for(Komputer k : pcList){
+                if(!topologia.containsKey(k.serwerPort)){
+                    continue;
+                }
+                List<Integer> polaczenia = topologia.get(k.serwerPort);
+                if(!polaczenia.isEmpty() && polaczenia.contains(pc.serwerPort)){
+                    //topologia.remove(pc.serwerPort);
+                    topologia.computeIfAbsent(k.serwerPort, l -> new ArrayList<>()).remove(polaczenia.indexOf(pc.serwerPort));
+                }
+            }
         }
     }
 }

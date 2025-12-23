@@ -13,6 +13,7 @@ public class AppState {
     private final IntegerProperty successfulMessages = new SimpleIntegerProperty(0);
     private final IntegerProperty errorMessages = new SimpleIntegerProperty(0);
     private final ObservableList<Double> deliveryTimes = FXCollections.observableArrayList();
+    private final ObservableList<String> drogaWiadomosci = FXCollections.observableArrayList();
 
     private AppState() {
     }
@@ -32,6 +33,31 @@ public class AppState {
         Platform.runLater(() -> {
             errorMessages.set(errorMessages.get() + 1);
         });
+    }
+
+    public static void addDrogaGlobal(String text){
+        getInstance().addDroga(text);
+    }
+
+    public void addDroga(String text) {
+        if (text == null || text.trim().isEmpty()) return;
+
+        Platform.runLater(() -> {
+            String czystyTekst = text.trim();
+
+            if (!drogaWiadomosci.contains(czystyTekst)) {
+                drogaWiadomosci.add(czystyTekst);
+            } else {
+            }
+        });
+    }
+
+    public void clearDroga() {
+        Platform.runLater(drogaWiadomosci::clear);
+    }
+
+    public ObservableList<String> getStatus(){
+        return drogaWiadomosci;
     }
 
     public IntegerProperty successfulMessagesProperty() {

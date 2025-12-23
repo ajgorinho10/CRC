@@ -84,8 +84,10 @@ public class ResponseTCP extends Thread {
 
             if(crckod == crc.calculateCRCFromString(receivedText)){
                 ResponseTCP.statistic(true,timeStart,System.nanoTime());
+                addDroga("PC-"+this.SourcePort+" RECIVED {MSG[OK] CRC[OK] BLAD[FALSE]}");
             }else{
                 ResponseTCP.statistic(false,timeStart,System.nanoTime());
+                addDroga("PC-"+this.SourcePort+"RECIVED {wiadomosc[OK] CRC[NOT OK] BLAD[TRUE]}");
                 return;
             }
 
@@ -94,9 +96,7 @@ public class ResponseTCP extends Thread {
 
 
             if (this.SourcePort == port) {
-                System.out.println("PC withId: " + this.SourcePort + " Recived:" + receivedText);
             } else {
-                System.out.println("PC withId: " + this.SourcePort + " Przesyła dane do" + destinationAddress);
                 TCPKlient klient = new TCPKlient();
 
                 klient.sourcePort = this.SourcePort;
@@ -113,6 +113,11 @@ public class ResponseTCP extends Thread {
             ResponseTCP.statistic(false, null,null);
         }
 
+    }
+
+    public static void addDroga(String text){
+        AppState appState = AppState.getInstance();
+        appState.addDroga(text);
     }
 
     public void reciveFile(DataInputStream dis) throws IOException, InterruptedException {
