@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import org.example.gui.CRCSimulation.Komputer;
@@ -25,7 +26,7 @@ public class SendFile {
     private Label responseMsg;
 
     @FXML
-    private Label STATUS;
+    private ListView statusMSG;
 
     @FXML
     private ChoiceBox<Integer> choiceBoxA;
@@ -49,11 +50,18 @@ public class SendFile {
 
         choiceBoxB.setItems(listaId);
         choiceBoxB.getSelectionModel().selectFirst();
+
+        AppState appState = AppState.getInstance();
+
+        statusMSG.setItems(appState.getStatusFILE());
     }
 
 
     @FXML
     protected void sendMsg() throws InterruptedException {
+        AppState appState = AppState.getInstance();
+        appState.clearDrogaFILE();
+
         String msg = msgInput.getText().trim();
 
         Integer source = choiceBoxA.getValue();
@@ -63,7 +71,7 @@ public class SendFile {
             responseMsg.setText("Nie prawidłowe dane");
         } else {
             responseMsg.setText("Wysłano: '" + msg + "' (Z:"+source+" Do:"+destination +")");
-            STATUS.setText("STATUS:"+Siec.sendFILE(msg, source-1, destination-1));
+            String response = Siec.sendFILE(msg, source-1, destination-1);
         }
     }
 }

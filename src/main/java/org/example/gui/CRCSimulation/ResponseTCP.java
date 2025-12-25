@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -24,8 +25,6 @@ public class ResponseTCP extends Thread {
     public static int AmountOferroeMessages = 0;
     public static List<Double> deliveredTime = new ArrayList<Double>();
 
-    public static CRC crc = Siec.crc;
-
 
     public ResponseTCP(Socket socket,boolean klient,int id) {
         this.socket = socket;
@@ -42,12 +41,28 @@ public class ResponseTCP extends Thread {
         }else{
             try {
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
+
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 int command = dis.readInt();
 
                 if (command == 1) {
-                    this.reciveMSG(dis);
+                    boolean result = this.reciveMSG(dis);
+                    if(result){
+                        this.sendStatus(dos,true);
+                    }else{
+                        this.sendStatus(dos,false);
+                        this.reciveMSG(dis);
+                    }
+
+
                 }else if (command == 2) {
-                    reciveFile(dis);
+                    boolean result = reciveFile(dis);
+                    if(result){
+                        sendStatus(dos,true);
+                    }else{
+                        sendStatus(dos,false);
+                        this.reciveFile(dis);
+                    }
                 }
 
             } catch (IOException | InterruptedException e) {
@@ -74,7 +89,7 @@ public class ResponseTCP extends Thread {
 
     }
 
-    public void reciveMSG(DataInputStream dis) throws IOException, InterruptedException {
+    public boolean reciveMSG(DataInputStream dis) throws IOException, InterruptedException {
 
         try {
             String destinationAddress = dis.readUTF();
@@ -82,13 +97,16 @@ public class ResponseTCP extends Thread {
             long crckod = dis.readLong();
             String receivedText = dis.readUTF();
 
-            if(crckod == crc.calculateCRCFromString(receivedText)){
+            boolean CRCOK = false;
+            if(crckod == Siec.crc.calculateCRCFromString(receivedText)){
                 ResponseTCP.statistic(true,timeStart,System.nanoTime());
-                addDroga("PC-"+this.SourcePort+" RECIVED {MSG[OK] CRC[OK] BLAD[FALSE]}");
+                addDrogaMSG("PC-"+this.SourcePort+" RECIVED { MSG[OK]["+receivedText+"]    CRC[OK]["+crckod+"]    BLAD[FALSE] }");
+                CRCOK = true;
             }else{
                 ResponseTCP.statistic(false,timeStart,System.nanoTime());
-                addDroga("PC-"+this.SourcePort+"RECIVED {wiadomosc[OK] CRC[NOT OK] BLAD[TRUE]}");
-                return;
+                addDrogaMSG("PC-"+this.SourcePort+" RECIVED { MSG[OK]["+receivedText+"]    CRC[NOT OK]["+crckod+"]    BLAD[TRUE] }");
+                CRCOK = false;
+                return false;
             }
 
             String ipAddress = destinationAddress.split(":")[0];
@@ -96,6 +114,9 @@ public class ResponseTCP extends Thread {
 
 
             if (this.SourcePort == port) {
+                if(CRCOK){
+                    addDrogaMSG("PC-"+this.SourcePort+" RECIVED MESSAGE SUCCESSFULLY!");
+                }
             } else {
                 TCPKlient klient = new TCPKlient();
 
@@ -109,18 +130,36 @@ public class ResponseTCP extends Thread {
             }
 
             this.RecivedMSG = receivedText;
+
+            return true;
         }catch (Exception e){
             ResponseTCP.statistic(false, null,null);
+            return false;
         }
-
     }
 
-    public static void addDroga(String text){
+    public void sendStatus(DataOutputStream dos,boolean ok) throws IOException {
+        if(ok) {
+            dos.writeInt(200);
+
+        }else{
+            dos.writeInt(0);
+        }
+        dos.flush();
+    }
+
+    public static void addDrogaMSG(String text){
         AppState appState = AppState.getInstance();
-        appState.addDroga(text);
+        appState.addDrogaMSG(text);
     }
 
-    public void reciveFile(DataInputStream dis) throws IOException, InterruptedException {
+    public static void addDrogaFile(String text){
+        AppState appState = AppState.getInstance();
+        appState.addDrogaFILE(text);
+    }
+
+
+    public boolean reciveFile(DataInputStream dis) throws IOException, InterruptedException {
 
         String destinationAddress = dis.readUTF();
         Long timeStart = dis.readLong();
@@ -147,17 +186,20 @@ public class ResponseTCP extends Thread {
             this.RecivedFile = fos.toString();
         }
 
-        long calculatedCrc = crc.calculateCRCFromFile(Paths.get(recivedFileName));
+        long calculatedCrc = Siec.crc.calculateCRCFromFile(Paths.get(recivedFileName));
         System.out.println("File calculated crc:"+calculatedCrc+", odebrany Crc:"+crckod);
 
         if(crckod == calculatedCrc){
             ResponseTCP.statistic(true,timeStart,System.nanoTime());
+            addDrogaFile("PC-"+this.SourcePort+" RECIVED { MSG[OK]    CRC[OK]["+crckod+"]    BLAD[FALSE] }");
         }else{
             ResponseTCP.statistic(false,timeStart,System.nanoTime());
+            addDrogaFile("PC-"+this.SourcePort+" RECIVED { MSG[OK]    CRC[NOT OK]["+crckod+"]    BLAD[TRUE] }");
+            return false;
         }
 
         if(this.SourcePort == port){
-            System.out.println("PC withId: "+this.SourcePort+" Recived:"+recivedFileName);
+            addDrogaFile("PC-"+this.SourcePort+" RECIVED FILE SUCCESSFULLY!");
         }else{
 
             TCPKlient klient = new TCPKlient();
@@ -170,5 +212,7 @@ public class ResponseTCP extends Thread {
             klient.start();
             klient.join();
         }
+
+        return true;
     }
 }

@@ -1,20 +1,14 @@
 package org.example.gui.CRCSimulation;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.gui.AppState;
-import org.example.gui.CRCSimulation.ThrowErrors.BadCrc;
-import org.example.gui.CRCSimulation.ThrowErrors.BadMessage;
 import org.example.gui.CRCSimulation.ThrowErrors.NoWay;
-import org.example.gui.SendMessage;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -31,10 +25,7 @@ public class TCPKlient extends Thread {
     public String filePath;
 
     private int nextPort;
-
-    public static CRC crc = Siec.crc;
-
-
+    
     public TCPKlient(int sourcePort,String desAdres, int desPort) {
         this.sourcePort = sourcePort;
         this.desAdres = desAdres;
@@ -48,7 +39,7 @@ public class TCPKlient extends Thread {
         List<Integer> sciezka = Komputer.znajdzSciezke(this.sourcePort,this.desPort);
         if(sciezka == null){
             ResponseTCP.statistic(false,0L,0L);
-            addDroga("PC-"+this.sourcePort+" not found path to PC-"+nextPort);
+            addDrogaMSG("PC-"+this.sourcePort+" not found path to PC-"+nextPort);
             throw new NoWay("Nie znaleziono ścieżki");
         }
         nextPort = sciezka.get(1);
@@ -56,10 +47,14 @@ public class TCPKlient extends Thread {
         try(Socket socket = new Socket(nextAdres,nextPort)){
 
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+
             if(message!=null && filePath == null){
                 this.sendText(dataOutputStream);
+                responseStatusMSG(dataInputStream,dataOutputStream);
             }else if(message==null && filePath!=null){
                 this.sendFile(dataOutputStream);
+                responseStatusFILE(dataInputStream,dataOutputStream);
             }
 
         }catch(Exception e){
@@ -73,7 +68,7 @@ public class TCPKlient extends Thread {
         dos.writeUTF(this.desAdres+":"+this.desPort);
         dos.writeLong(System.nanoTime());
 
-        long crcKod = crc.calculateCRCFromString(message);
+        long crcKod = Siec.crc.calculateCRCFromString(message);
 
 
         if(Siec.ErrorType == 3 && (Siec.ErrorPC + 5000) == this.sourcePort){
@@ -82,19 +77,36 @@ public class TCPKlient extends Thread {
             String badMsg = this.makeTextError(this.message);
             System.out.println("PC"+this.sourcePort+" robi bład:"+badMsg);
             dos.writeUTF(badMsg);
-            addDroga("PC-"+this.sourcePort+" sent {MSG[NOT OK] CRC[OK] BLAD[TRUE]} to PC-"+nextPort);
+            addDrogaMSG("PC-"+this.sourcePort+" sent { MSG[NOT OK]    CRC[OK]    BLAD[TRUE] } to PC-"+nextPort);
         }else if(Siec.ErrorType == 2 && (Siec.ErrorPC + 5000) == this.sourcePort){
             Long badCRC = this.makeCRCError(crcKod);
             dos.writeLong(badCRC);
             dos.writeUTF(this.message);
-            addDroga("PC-"+this.sourcePort+" sent {MSG[OK] CRC[NOT OK] BLAD[TRUE]} to PC-"+nextPort);
+            addDrogaMSG("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[NOT OK]    BLAD[TRUE] } to PC-"+nextPort);
         }
         else{
             dos.writeLong(crcKod);
             dos.writeUTF(this.message);
-            addDroga("PC-"+this.sourcePort+" sent {MSG[OK] CRC[OK] BLAD[FALSE]} to PC-"+nextPort);
+            addDrogaMSG("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[OK]    BLAD[FALSE] } to PC-"+nextPort);
         }
 
+        dos.flush();
+    }
+
+    public void responseStatusMSG(DataInputStream dis,DataOutputStream dos) throws IOException {
+        int status = dis.readInt();
+        dos.flush();
+
+        if(status == 200){
+            return;
+        }
+
+        dos.writeUTF(this.desAdres+":"+this.desPort);
+        dos.writeLong(System.nanoTime());
+        long crcKod = Siec.crc.calculateCRCFromString(message);
+        dos.writeLong(crcKod);
+        dos.writeUTF(this.message);
+        addDrogaMSG("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[OK]    BLAD[FALSE] } to PC-"+nextPort);
         dos.flush();
     }
 
@@ -112,9 +124,14 @@ public class TCPKlient extends Thread {
         return CRC-1;
     }
 
-    public static void addDroga(String text){
+    public static void addDrogaMSG(String text){
         AppState appState = AppState.getInstance();
-        appState.addDroga(text);
+        appState.addDrogaMSG(text);
+    }
+
+    public static void addDrogaFILE(String text){
+        AppState appState = AppState.getInstance();
+        appState.addDrogaFILE(text);
     }
 
     public void sendFile(DataOutputStream dos) throws IOException {
@@ -124,8 +141,21 @@ public class TCPKlient extends Thread {
         dos.writeUTF(this.desAdres+":"+this.desPort);
         dos.writeLong(System.nanoTime());
 
-        long crcKod = crc.calculateCRCFromFile(Paths.get(filePath));
-        dos.writeLong(crcKod);
+        long crcKod = Siec.crc.calculateCRCFromFile(Paths.get(filePath));
+        if(Siec.ErrorType == 2 && (Siec.ErrorPC + 5000) == this.sourcePort){
+            dos.writeLong(makeCRCError(crcKod));
+            addDrogaFILE("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[NOT OK]    BLAD[TRUE] } to PC-"+nextPort);
+        }else if(Siec.ErrorType == 3 && (Siec.ErrorPC + 5000) == this.sourcePort){
+            addDrogaFILE("PC-"+this.sourcePort+" sent { MSG[NOT OK]    CRC[OK]    BLAD[TRUE] } to PC-"+nextPort);
+            dos.writeLong(crcKod);
+
+            sendBadFile(dos,file);
+            return;
+        }
+        else{
+            addDrogaFILE("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[OK]    BLAD[FALSE] } to PC-"+nextPort);
+            dos.writeLong(crcKod);
+        }
 
         dos.writeUTF(file.getName());
         dos.writeLong(file.length());
@@ -135,6 +165,50 @@ public class TCPKlient extends Thread {
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) > 0) {
                 dos.write(buffer, 0, bytesRead);
+            }
+        }
+        dos.flush();
+    }
+
+    public void responseStatusFILE(DataInputStream dis,DataOutputStream dos) throws IOException {
+        int status = dis.readInt();
+        dos.flush();
+
+        if(status == 200){
+            return;
+        }
+
+        File file = new File(this.filePath);
+
+        dos.writeUTF(this.desAdres+":"+this.desPort);
+        dos.writeLong(System.nanoTime());
+
+        long crcKod = Siec.crc.calculateCRCFromFile(Paths.get(filePath));
+        addDrogaFILE("PC-"+this.sourcePort+" sent { MSG[OK]    CRC[OK]    BLAD[FALSE] } to PC-"+nextPort);
+        dos.writeLong(crcKod);
+        dos.writeUTF(file.getName());
+        dos.writeLong(file.length());
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) > 0) {
+                dos.write(buffer, 0, bytesRead);
+            }
+        }
+        dos.flush();
+    }
+
+    public void sendBadFile(DataOutputStream dos,File file) throws IOException {
+        dos.writeUTF(file.getName());
+        dos.writeLong(file.length());
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) > 0) {
+                String tmp = makeTextError(Arrays.toString(buffer));
+                dos.write(tmp.getBytes(), 0, bytesRead);
             }
         }
         dos.flush();

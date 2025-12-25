@@ -33,5 +33,5 @@
     </HBox>
 
     <Label fx:id="responseMsg"/>
-    <Label fx:id="STATUS"/>
+    <ListView fx:id="statusMSG"/>
 </VBox>

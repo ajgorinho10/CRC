@@ -55,7 +55,7 @@ public class SendMessage {
     @FXML
     protected void sendMsg() throws InterruptedException {
         AppState appState = AppState.getInstance();
-        appState.clearDroga();
+        appState.clearDrogaMSG();
 
         String msg = msgInput.getText().trim();
 

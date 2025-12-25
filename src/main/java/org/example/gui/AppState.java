@@ -14,6 +14,10 @@ public class AppState {
     private final IntegerProperty errorMessages = new SimpleIntegerProperty(0);
     private final ObservableList<Double> deliveryTimes = FXCollections.observableArrayList();
     private final ObservableList<String> drogaWiadomosci = FXCollections.observableArrayList();
+    private final ObservableList<String> drogaPliku= FXCollections.observableArrayList();
+
+    private static int numberOfMSg = 0;
+    private static int numberOfFILe = 0;
 
     private AppState() {
     }
@@ -35,11 +39,15 @@ public class AppState {
         });
     }
 
-    public static void addDrogaGlobal(String text){
-        getInstance().addDroga(text);
+    public static void addDrogaMSGGlobal(String text){
+        getInstance().addDrogaMSG(text);
     }
 
-    public void addDroga(String text) {
+    public static void addDrogaFILEGlobal(String text){
+        getInstance().addDrogaFILE(text);
+    }
+
+    public void addDrogaMSG(String text) {
         if (text == null || text.trim().isEmpty()) return;
 
         Platform.runLater(() -> {
@@ -47,18 +55,49 @@ public class AppState {
 
             if (!drogaWiadomosci.contains(czystyTekst)) {
                 drogaWiadomosci.add(czystyTekst);
+                numberOfMSg += 1;
             } else {
+            }
+
+            if (numberOfMSg%2 == 0){
+                drogaWiadomosci.add(" ");
             }
         });
     }
 
-    public void clearDroga() {
+    public void clearDrogaMSG() {
         Platform.runLater(drogaWiadomosci::clear);
+        numberOfMSg = 0;
+    }
+
+    public void addDrogaFILE(String text) {
+        if (text == null || text.trim().isEmpty()) return;
+
+        Platform.runLater(() -> {
+            String czystyTekst = text.trim();
+
+            if (!drogaPliku.contains(czystyTekst)) {
+                drogaPliku.add(czystyTekst);
+                numberOfFILe += 1;
+            } else {
+            }
+
+            if (numberOfFILe%2 == 0){
+                drogaPliku.add(" ");
+            }
+        });
+    }
+
+    public void clearDrogaFILE() {
+        Platform.runLater(drogaPliku::clear);
+        numberOfFILe = 0;
     }
 
     public ObservableList<String> getStatus(){
         return drogaWiadomosci;
     }
+
+    public ObservableList<String> getStatusFILE(){return drogaPliku;}
 
     public IntegerProperty successfulMessagesProperty() {
         return successfulMessages;
