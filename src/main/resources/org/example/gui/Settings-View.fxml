@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<VBox alignment="TOP_LEFT" spacing="10.0"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.gui.Settings" fx:id="root">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <BorderPane>
+
+        <left>
+            <VBox spacing="15.0">
+                <padding>
+                    <Insets top="10" left="10" right="20" bottom="10"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Wybierz błąd"/>
+                    <ChoiceBox fx:id="choiceBoxError" onAction="#ShowErrorPCbox"/>
+                </HBox>
+
+                <HBox visible="false" fx:id="ErrorVbox" alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Wybierz pc:"/>
+                    <ChoiceBox fx:id="choiceBoxErrorPC" />
+                </HBox>
+
+            </VBox>
+        </left>
+
+
+        <right>
+            <VBox spacing="10.0">
+                <padding>
+                    <Insets top="10" left="20" right="10" bottom="10"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw Polly" prefWidth="100.0" />
+                    <TextField fx:id="polly"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw init" prefWidth="100.0"/>
+                    <TextField fx:id="init"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw XorOut" prefWidth="100.0"/>
+                    <TextField fx:id="XorOut"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw dlugosc" prefWidth="100.0"/>
+                    <TextField fx:id="dlugosc"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw refIn" prefWidth="100.0"/>
+                    <CheckBox fx:id="refIn"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Ustaw refOut" prefWidth="100.0"/>
+                    <CheckBox fx:id="refOut"/>
+                </HBox>
+
+            </VBox>
+        </right>
+
+    </BorderPane>
+
+
+    <VBox alignment="CENTER" spacing="10.0">
+            <Button text="Save" onAction="#Save" />
+            <Label fx:id="status"/>
+    </VBox>
+
+
+</VBox>

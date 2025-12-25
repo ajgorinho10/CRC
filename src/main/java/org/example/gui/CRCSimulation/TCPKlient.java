@@ -32,7 +32,7 @@ public class TCPKlient extends Thread {
 
     private int nextPort;
 
-    public static CRC crc = new CRC(0x2F,0xFF,0xFF,8);
+    public static CRC crc = Siec.crc;
 
 
     public TCPKlient(int sourcePort,String desAdres, int desPort) {

@@ -24,7 +24,7 @@ public class ResponseTCP extends Thread {
     public static int AmountOferroeMessages = 0;
     public static List<Double> deliveredTime = new ArrayList<Double>();
 
-    public static CRC crc = new CRC(0x2F,0xFF,0xFF,8);
+    public static CRC crc = Siec.crc;
 
 
     public ResponseTCP(Socket socket,boolean klient,int id) {

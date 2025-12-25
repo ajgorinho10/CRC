@@ -13,12 +13,12 @@ import java.nio.file.Path;
 @Data
 public class CRC {
 
-    private final long polynomial;
-    private final long initialValue;
+    public final long polynomial;
+    public final long initialValue;
     public final boolean refIn;
     public final boolean refOut;
-    private final long xorOut;
-    private final int width;
+    public final long xorOut;
+    public final int width;
 
 
     private final long[] crcTable = new long[256];

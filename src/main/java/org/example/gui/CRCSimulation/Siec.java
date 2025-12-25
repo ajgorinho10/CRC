@@ -11,6 +11,7 @@ public class Siec {
     public static final int AMOUNT_OF_PC = 10;
     public static List<Komputer> pcList = new ArrayList<Komputer>();
     public static Map<Integer, List<Integer>> topologia = new ConcurrentHashMap<>();
+    public static CRC crc = new CRC(0x2F,0xFF,0xFF,8);
 
     public static int ErrorType;
     public static int ErrorPC;
