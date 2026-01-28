@@ -6,6 +6,19 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+
+/*
+ * Klasa AppState zarządza globalnym stanem aplikacji, przechowuje statystyki oraz historię zdarzeń sieciowych.
+ *
+ * getInstance: Zwraca stan aplikacji (singleton)
+ * reportSuccess: Aktualizuje licznik poprawnych transmisji oraz rejestruje czas dostarczenia wiadomości.
+ * reportError: Aktualizuje licznik błędnych transmisji.
+ * addDrogaMSG / addDrogaFILE: Dodaje wpisy o statusie transmisji do logów.
+ * clearDrogaMSG / clearDrogaFILE: Resetuje historię poszczególnych logów.
+ 
+ */
+
+
 public class AppState {
 
     private static final AppState instance = new AppState();

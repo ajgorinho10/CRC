@@ -13,6 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import org.example.gui.AppState;
 
+
+/*
+ * Klasa ResponseTCP obsługuje strumień wejściowy na serwerze, weryfikuje integralność danych
+ *    oraz zarządza statystykami transmisji.
+ *
+ * run: Rozpoznaje typ przychodzących danych i wywołuje odpowiednią metodę odbiorczą
+ * reciveMSG: Odbiera wiadomość, weryfikuje jej kod CRC i decyduje czy wyświetlić treść, czy przekazać ją dalej
+ * reciveFile: Odbiera strumień bajtów pliku, weryfikuje jego kod CRC, zapisuje go na dysku pod nową nazwą,
+ *     sprawdza czy przekazać plik dalej
+ * sendStatus: Przesyła do nadawcy kod statusu informujący o powodzeniu/błędzie w trakcie przesłania.
+ * statistic: Zbiera dane o czasie i wyniku operacji, po czym przekazuje je do Singletona do aktualizacji globalnych liczników.
+ */
+
+
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseTCP extends Thread {

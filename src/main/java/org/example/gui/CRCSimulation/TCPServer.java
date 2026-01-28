@@ -1,14 +1,24 @@
 package org.example.gui.CRCSimulation;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+/*
+ * Klasa TCPServer realizuje funkcjonalność serwera sieciowego, działając w osobnym wątku 
+ * i zarządzając przyjmowaniem nowych połączeń TCP.
+ *
+ * run: Inicjalizuje ServerSocket na określonym porcie i w pętli oczekuje na próby połączenia. Po nawiązaniu połączenia
+ *     tworzy dedykowany obiekt Socket dla danej sesji komunikacyjnej i dodaje go do listy aktywnych połączeń.
+ *
+ */
+
+
 
 @AllArgsConstructor
 @NoArgsConstructor

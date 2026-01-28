@@ -1,16 +1,36 @@
 package org.example.gui.CRCSimulation;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.example.gui.AppState;
-import org.example.gui.CRCSimulation.ThrowErrors.NoWay;
-
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import org.example.gui.AppState;
+import org.example.gui.CRCSimulation.ThrowErrors.NoWay;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+/*
+ * Klasa TCPKlient odpowiada za realizację połączeń wychodzących, segmentację danych 
+ *     oraz wstrzykiwanie błędów do strumienia transmisyjnego.
+ *
+ * run: Wyznacza kolejny węzeł na trasie, otwiera gniazdo i inicjuje procedurę wysyłania tekstu lub pliku.
+ * sendText: Przesyła wiadomość tekstową wraz z adresem docelowym i obliczonym kodem CRC, w razie potrzeby wprowadza błędy do wiadomości lub kodu CRC.
+ * sendFile: Dzieli plik na części, w pętli go przesyła, dołącza dane o nazwie i wielkości pliku oraz obliczony kod CRC
+ * responseStatusMSG / responseStatusFILE: Odbiera informację zwrotną od serwera i w przypadku wykrycia
+ *     błędu u odbiorcy inicjuje retransmisję danych.
+ * makeTextError Celowo modyfikuje przesyłane dane  poprzez zmianę losowego znaku w celu symulacji błędów w przesyłaniu.
+ * makeCRCError: Celowo zmienia wartość CRC w celu symulacji błędów w przesyłaniu.
+ * sendBadFile: Metoda konwertuje zawartość bufora na formę tekstową i zmienia losowe znaki w celu symulacji błędów w przesyłaniu.
+ */
+
 
 @AllArgsConstructor
 @NoArgsConstructor

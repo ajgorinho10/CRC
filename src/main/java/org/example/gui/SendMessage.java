@@ -1,5 +1,7 @@
 package org.example.gui;
 
+import org.example.gui.CRCSimulation.Siec;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +10,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import org.example.gui.CRCSimulation.Siec;
+
+
+/*
+* Klasa SendMessage obsługuje GUI do wysyłania wiadomości
+*
+* initialize: Ustawia listę dostępnych komputerów i zbiera dane o wybranym nadawcy i odbiorcy, pozwala śledzić status wiadomości
+* sendMsg: Weryfikuje dane wejściowe, wywołuje metodę Siec.sendMSG w celu wysłania wiadomości
+*/
 
 
 public class SendMessage {

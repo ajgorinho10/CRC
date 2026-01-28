@@ -1,10 +1,19 @@
 package org.example.gui;
 
+import java.util.List;
+
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-import java.util.List;
+/*
+ * Klasa Status obsługuje GUI podglądu statystyk.
+ *
+ * initialize: Konfiguruje automatyczne odświeżanie etykiet dla liczników.
+ * updateAverageTime: Oblicza średni czas przesyłania danych.
+ */
+
+
 
 public class Status {
 

@@ -1,5 +1,7 @@
 package org.example.gui;
 
+import org.example.gui.CRCSimulation.Siec;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,11 +10,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import org.example.gui.CRCSimulation.Komputer;
-import org.example.gui.CRCSimulation.Siec;
 
-import java.util.ArrayList;
-import java.util.List;
+
+/*
+ * Klasa SendFile obsługuje GUI odpowiedzialne za wysyłanie plików
+ *
+ * initialize: Ustawia listę dostępnych komputerów i zbiera dane o wybranym nadawcy i odbiorcy
+ * sendMsg: Weryfikuje dane wejściowe, wywołuje metodę Siec.sendFILE w celu wysłania pliku
+ */
+
 
 
 public class SendFile {

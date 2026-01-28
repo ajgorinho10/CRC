@@ -1,14 +1,23 @@
 package org.example.gui.CRCSimulation;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import lombok.Data;
+
+
+/*
+ * Klasa CRC realizuje logikę obliczania i weryfikacji algorytmu CRC
+ *
+ * generateCRCTable: Generuje statyczną tablicę wartości dla danego wielomianu, optymalizuje proces obliczeń
+ * calculateCRCFromFile: Wyznacza wartość CRC dla pliku binarnego bajt po bajcie.
+ * calculateCRCFromString: Wyznacza wartość CRC dla danej wiadomości.
+ * Verify: Weryfikuje poprawność odebranych danych przez obliczenie CRC i porównanie z przesłaną sumą kontrolną.
+ * reverseBits: Wykonuje bit reversal dla danych wejściowych/wyniku końcowego.
+ */
 
 @Data
 public class CRC {

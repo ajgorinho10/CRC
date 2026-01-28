@@ -1,5 +1,8 @@
 package org.example.gui;
 
+import org.example.gui.CRCSimulation.CRC;
+import org.example.gui.CRCSimulation.Siec;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,9 +11,18 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import org.example.gui.CRCSimulation.CRC;
-import org.example.gui.CRCSimulation.Siec;
+
+/*
+ * Klasa Settings obsługuje GUI do konfiguracji parametrów algorytmu CRC oraz wybór
+ * scenariuszy błędów w symulowanej sieci.
+ *
+ * initialize: Zapełnia listy wyboru oraz ładuje bieżące parametry wielomianu i flag CRC.
+ * Save: Pobiera i waliduje dane z interfejsu, tworzy nową instancję klasy CRC z zebranymi parametrami oraz
+ *     aktualizuje globalny stan błędów.
+ * ShowErrorPCbox: Pokazuje dodatkowy element interfejsu gdy wybrany jest jeden ze scenariuszy błędów.
+ */
+
+
 
 public class Settings {
 

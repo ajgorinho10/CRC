@@ -1,13 +1,27 @@
 package org.example.gui.CRCSimulation;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
+
 import org.example.gui.CRCSimulation.ThrowErrors.BadCrc;
 import org.example.gui.CRCSimulation.ThrowErrors.BadMessage;
 import org.example.gui.CRCSimulation.ThrowErrors.NoWay;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentHashMap;
+
+/*
+ * Klasa Komputer reprezentuje węzeł sieciowy odpowiedzialny za odbieranie, wysyłanie oraz wyznaczanie tras pakietów.
+ *
+ * run: Inicjalizuje serwer TCP na danym porcie i rozpoczyna nasłuchiwanie na połączenia przychodzące.
+ * sendMessage: Tworzy obiekt TCPKlient w celu wysłania wiadomości tekstowej do sąsiedniego węzła
+ *     oraz powiadamia o wystąpieniu błędu.
+ * sendFile: Tworzy obiekt TCPKlient w celu wysłania pliku binarnego do sąsiedniego węzła.
+ * znajdzSciezke: Wykorzystuje algorytm BFS do wyznaczenia najkrótszej ścieżki pomiędzy węzłem startowym a docelowym w oparciu o topologię sieci.
+ */
 
 
 public class Komputer extends Thread {

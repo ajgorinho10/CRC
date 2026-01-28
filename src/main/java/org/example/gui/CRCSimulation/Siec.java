@@ -6,6 +6,19 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+/*
+* Klasa Siec definiuje topologię sieci i zarządza procesem komunikacji między komputerami
+*
+* start: Tworzy topologię połączeń, inicjalizuje 10 obiektów klasy Komputer i uruchamia ich wątki
+* stworzTopologie: Tworzy połączenia między poszczególnymi komputerami na podstawie podanych portów
+* polacz: Metoda pomocnicza do budowy mapy sąsiedztwa między komputerami
+* sendMSG: Pobiera dane o nadawcy i odbiorcy, następnie inicjuje wysyłkę wiadomości tekstowej
+* sendFILE: Pobiera dane o nadawcy i odbiorcy, następnie inicjuje proces przesyłania pliku
+* makeError: Symuluje fizyczne odłączenie wybranego węzła od sieci w celu przetestowania mechanizmów routingu i obsługi wyjątków.
+*
+*/
+
+
 public class Siec {
 
     public static final int AMOUNT_OF_PC = 10;
